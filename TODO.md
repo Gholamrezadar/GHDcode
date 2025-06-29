@@ -13,7 +13,7 @@
 - [x] Enter key should insert a new line
 - [x] Only Render the visible lines
 - [x] Set cursor position with mouse
-  - [ ] Is off by a few pixels
+  - [x] Is off by a few pixels (fixed by subtracting editors window padding.)
 - [ ] Scrolling
   - [ ] Scroll wheel
   - [ ] Follow cursor
