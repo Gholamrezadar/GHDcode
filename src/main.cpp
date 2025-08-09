@@ -184,6 +184,11 @@ int main(void) {
                 editor.debugGrid = !editor.debugGrid;
             }
 
+            // Toggle debug info (Ctrl+H)
+            if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_H)) {
+                editor.debugInfo = !editor.debugInfo;
+            }
+
             // Change vertical spacing (Shift+E and Shift+Q)
             if (IsKeyDown(KEY_LEFT_SHIFT) && IsKeyPressed(KEY_E)) {
                 editor.baseVerticalLineSpacing += 5;
@@ -531,19 +536,22 @@ int main(void) {
 
             // Draw debug info
             if (true) {
-            const float debug_text_left = GetScreenWidth() - 300;
+                if(editor.debugInfo) {
+                    const float debug_text_left = GetScreenWidth() - 240;
+                    const float debug_text_top = GetScreenHeight() - 110;
 
-            // viewportStart
-            std::string debug_string_viewport_start = "viewportStart: " + std::to_string(viewportStart); 
-            DrawTextEx(font, debug_string_viewport_start.c_str() , Vector2{debug_text_left, 40.0f}, 22.0f, 0.0f, GREEN);
+                    // viewportStart
+                    std::string debug_string_viewport_start = "viewportStart: " + std::to_string(viewportStart); 
+                    DrawTextEx(font, debug_string_viewport_start.c_str() , Vector2{debug_text_left, debug_text_top+40.0f}, 22.0f, 0.0f, GREEN);
 
-            // viewportLineCount
-            std::string debug_string_viewport_line_count = "viewportLineCount: " + std::to_string(viewportLineCount); 
-            DrawTextEx(font, debug_string_viewport_line_count.c_str() , Vector2{debug_text_left, 60.0f}, 22.0f, 0.0f, GREEN);
+                    // viewportLineCount
+                    std::string debug_string_viewport_line_count = "viewportLineCount: " + std::to_string(viewportLineCount); 
+                    DrawTextEx(font, debug_string_viewport_line_count.c_str() , Vector2{debug_text_left, debug_text_top+60.0f}, 22.0f, 0.0f, GREEN);
 
-            // Cursor Position
-            std::string debug_string_cursor_position = "cursorPosition: " + std::to_string(int(cursorPosition.x)) + ", " + std::to_string(int(cursorPosition.y)); 
-            DrawTextEx(font, debug_string_cursor_position.c_str() , Vector2{debug_text_left, 80.0f}, 22.0f, 0.0f, GREEN);
+                    // Cursor Position
+                    std::string debug_string_cursor_position = "cursorPosition: " + std::to_string(int(cursorPosition.x)) + ", " + std::to_string(int(cursorPosition.y)); 
+                    DrawTextEx(font, debug_string_cursor_position.c_str() , Vector2{debug_text_left, debug_text_top+80.0f}, 22.0f, 0.0f, GREEN);
+                }
         }
             
             EndDrawing();

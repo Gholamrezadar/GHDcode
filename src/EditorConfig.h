@@ -27,4 +27,5 @@ struct EditorConfig {
 
     // debug
     bool debugGrid = false;
+    bool debugInfo = true;
 };
