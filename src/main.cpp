@@ -104,6 +104,8 @@ By Gholamreza Dar
 
     // read from file
     textData = readFile("resources/sample.txt");
+    textData = readFile("resources/lorem.txt");
+    // textData = readFile("resources/lorem_short.txt");
 
     // read from command line
     // textData = readFileFromCommandLine(argc, argv);
@@ -127,6 +129,8 @@ By Gholamreza Dar
     // of bounds
 
     // Main loop (ESC to exit)
+    int viewportStart = 0;
+    int viewportLineCount = 0;
     while (!WindowShouldClose())
     {
         screenWidth = GetScreenWidth();
@@ -401,6 +405,18 @@ By Gholamreza Dar
                 // also set the x position to the max of position and
                 // lastCursorPositionX
                 cursorPosition.x = MAX(cursorPosition.x, lastCursorPositionX);
+                std::cout << "viewportStart: " << viewportStart << std::endl;
+                std::cout << "viewportLineCount: " << viewportLineCount << std::endl;
+                std::cout << std::endl;
+                if (cursorPosition.y > viewportLineCount - 1)
+                {
+                    viewportStart += 1;
+                }
+                if(cursorPosition.y < viewportStart)
+                {
+                    viewportStart -= 1;
+                }
+                
             }
 
             // if the cursor is out of bounds, clamp it to the current line
@@ -493,7 +509,7 @@ By Gholamreza Dar
         }
 
         // Draw the line numbers
-        {
+        if(true){
             // Line Numbers
             SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
             // TODO: dont start from 0, have a viewport start, end
@@ -512,7 +528,7 @@ By Gholamreza Dar
         }
 
         // Draw the text character by character
-        {
+        if(true){
             // Text
             // TODO: dont start from 0, have a viewport start, end
             for (int i = 0; i < editorData.getNumLines(); i++)
@@ -521,16 +537,22 @@ By Gholamreza Dar
                           editor.gridWidth * (editor.lineNumberWidth + 2);
                 float y = i * editor.verticalLineSpacing +
                           i * editor.gridHeight + editor.windowPadding;
+                // count viewport lines (TODO: Can be calculated algebraically)
+                // viewportLineCount++;
+
                 if (y >= GetScreenHeight())
+                {
+                    viewportLineCount = i;
                     break;
-                std::string line_text = editorData.getLine(i);
+                }
+                std::string line_text = editorData.getLine(i+viewportStart);
                 DrawTextEx(font, line_text.c_str(), Vector2{x, y},
                            editor.fontSize, 0, editor.editorTextColor);
             }
         }
 
         // Draw the cursor
-        {
+        if(true){
             float cursorOpacity =
                 sin(GetTime() * editor.cursorBlinkSpeed) * 0.5f + 0.5f;
             cursorOpacity = MIN(cursorOpacity, 0.8f);

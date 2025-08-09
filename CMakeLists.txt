@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24...3.30)
+cmake_minimum_required(VERSION 4.0)
 project(GHDcode)
 
 include(FetchContent)
