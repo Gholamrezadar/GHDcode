@@ -14,6 +14,7 @@
 - [x] Only Render the visible lines
 - [x] Set cursor position with mouse
   - [x] Is off by a few pixels (fixed by subtracting editors window padding.)
+- [ ] Ctrl+backspace to delete a word before the cadet
 - [ ] Scrolling
   - [ ] Scroll wheel
   - [ ] Follow cursor
