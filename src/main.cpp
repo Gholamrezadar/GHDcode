@@ -5,49 +5,14 @@
 #include <string>
 #include <vector>
 
+#include "EditorConfig.h"
 #include "EditorData.h"
 #include "utils.h"
 
-// struct for editor config
-struct EditorConfig {
-    // Sizes
-    float windowPadding;
-    float verticalLineSpacing;
-    float baseVerticalLineSpacing;
-    int lineNumberWidth;
-    int spaceBetweenNumbersAndText;
-    float editorZoom;
-    float zoomSpeed;
-    float fontSize;
-    float gridWidth;
-    float gridHeight;
-    float gridLineWidth;
-    float cursorBlinkSpeed;
-
-    // Colors
-    Color editorBackgroundColor;
-    Color editorTextColor;
-    Color editorLineNumbersColor;
-    Color editorVerticalLineColor;
-    Color editorCursorColor;
-    Color editorGridColor;
-
-    // debug
-    bool debugGrid = false;
-};
-
-int main(void) {
-    // Create window
-    int screenWidth = 1280;
-    int screenHeight = 720;
-    // SetTraceLogLevel(LOG_NONE);
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    SetConfigFlags(FLAG_MSAA_4X_HINT);
-    InitWindow(screenWidth, screenHeight, "GHDcode");
-    // SetTargetFPS(60);
-
-    // Editor Config
-    EditorConfig editor{
+// Initial values for EditorConfig
+// TODO: just convert EditorConfig to a class with some utility methods
+void initializeEditorConfig(EditorConfig& editor) {
+    editor = {
         .windowPadding = 10.0f,
         .baseVerticalLineSpacing = 5.0f,
         .lineNumberWidth = 3,
@@ -64,45 +29,33 @@ int main(void) {
         .editorCursorColor = Color{47, 129, 247, 170},
         .editorGridColor = Color{255, 0, 255, 100},
         .debugGrid = false,
-
     };
-    editor.verticalLineSpacing =
-        editor.baseVerticalLineSpacing * editor.editorZoom;
+    editor.verticalLineSpacing = editor.baseVerticalLineSpacing * editor.editorZoom;
     editor.fontSize = int(16 * editor.editorZoom);
+}
 
-    Vector2 cursorPosition = Vector2{0.0f, 0.0f};
-    cursorPosition.x =
-        editor.lineNumberWidth + editor.spaceBetweenNumbersAndText;
-    cursorPosition.y = 0;
-    float lastCursorPositionX = cursorPosition.x;
+int main(void) {
+    // Create window
+    int screenWidth = 1280;
+    int screenHeight = 720;
 
-    // Load Fonts
-    Font font = LoadFontEx("resources/fonts/FiraCode-Regular.ttf",
-                           editor.fontSize, nullptr, 0);
+    // TODO: they should go into EditorConfig
+    int viewportStart = 0;
+    int viewportLineCount = 0;
 
-    editor.gridWidth = MeasureTextEx(font, "A", editor.fontSize, 0).x;
-    editor.gridHeight = MeasureTextEx(font, "A", editor.fontSize, 0).y;
+    // SetTraceLogLevel(LOG_NONE);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
+    InitWindow(screenWidth, screenHeight, "GHDcode");
+    // SetTargetFPS(60);
 
+    
     // Data
-    std::string textData = R"(Hello World!
-
-This is GHDcode, a featureless and fast text editor
-written using raylib.
-
-test
-test
-test
-test
-test
-test
-\ttest
-
-By Gholamreza Dar
-    )";
+    std::string textData;
 
     // read from file
-    textData = readFile("resources/sample.txt");
-    textData = readFile("resources/lorem.txt");
+    // textData = readFile("resources/sample.txt");
+    // textData = readFile("resources/lorem.txt");
     // textData = readFile("resources/lorem_short.txt");
 
     // read from command line
@@ -110,9 +63,12 @@ By Gholamreza Dar
 
     // empty text
     // TODO: Segmentation fault with empty text
+    textData = "";
+
+    // Scroll test text
     textData = R"(1
 2
-3
+3 333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
 4
 5
 6
@@ -152,38 +108,40 @@ By Gholamreza Dar
 40
     )";
 
-    // convert loaded text to EditorData
+    // Editor Data
     EditorData editorData(textData);
 
-    // test the text editing functions
-    // editorData.insertLine(0, "Hello World!"); // works
-    // editorData.insertLine(1, "This is a test"); // works
-    // editorData.deleteLine(0); // works
-    // editorData.insertLineBreak(0, 5); // works
-    // editorData.insertChar(0, 5, 'z'); // works
-    // editorData.insertChar(0, 5, 'z'); // works
-    // editorData.insertChar(0, 5, 'z'); // works
-    // editorData.insertChar(0, 50, 'z'); // works but make sure youre not out
-    // of bounds
+    // Editor Config
+    EditorConfig editor;
+    initializeEditorConfig(editor);
+
+    // Cursor (TODO: should go into EditorConfig)
+    Vector2 cursorPosition = Vector2{0.0f, 0.0f};
+    // TODO: zero cursor
+    cursorPosition.x = editor.lineNumberWidth + editor.spaceBetweenNumbersAndText;
+    cursorPosition.y = 0;
+
+    // TODO: should go into EditorConfig
+    float lastCursorPositionX = cursorPosition.x;
+
+    // Load Fonts
+    Font font = LoadFontEx("resources/fonts/FiraCode-Regular.ttf",
+                           editor.fontSize, nullptr, 0);
+
+    // Set grid dimensions based on font
+    editor.gridWidth = MeasureTextEx(font, "A", editor.fontSize, 0).x;
+    editor.gridHeight = MeasureTextEx(font, "A", editor.fontSize, 0).y;
+
 
     // Main loop (ESC to exit)
-    int viewportStart = 0;
-    int viewportLineCount = 0;
+    
     while (!WindowShouldClose()) {
         screenWidth = GetScreenWidth();
         screenHeight = GetScreenHeight();
 
-        BeginDrawing();
-
-        // Background
-        ClearBackground(editor.editorBackgroundColor);
-
-        // FPS counter
-        DrawFPS(screenWidth - 110, 10);
-
-        // UI
+        ///////////////////////// Input Handling /////////////////////////
         {
-            // Change editor zoom with control+Q and control+E
+            // Zoom (Ctrl+Q and Ctrl+E)
             if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_Q)) {
                 editor.editorZoom -= editor.zoomSpeed;
                 editor.editorZoom = MAX(0.5f, editor.editorZoom);
@@ -221,12 +179,12 @@ By Gholamreza Dar
                 }
             }
 
-            // Toggle debug grid with CTRL+G
+            // Toggle debug grid (Ctrl+G)
             if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_G)) {
                 editor.debugGrid = !editor.debugGrid;
             }
 
-            // Change vertical spacing using Shift+E and Shift+Q
+            // Change vertical spacing (Shift+E and Shift+Q)
             if (IsKeyDown(KEY_LEFT_SHIFT) && IsKeyPressed(KEY_E)) {
                 editor.baseVerticalLineSpacing += 5;
                 editor.baseVerticalLineSpacing =
@@ -242,7 +200,70 @@ By Gholamreza Dar
                     editor.baseVerticalLineSpacing * editor.editorZoom;
             }
 
-            // Handle editor input (typing, deleting, etc.)
+            // Cursor movement
+            if (IsKeyPressed(KEY_LEFT) ||
+                (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_H))) {
+                cursorPosition.x -= 1;
+                cursorPosition.x = MAX(
+                    editor.lineNumberWidth + editor.spaceBetweenNumbersAndText,
+                    cursorPosition.x);
+                lastCursorPositionX = cursorPosition.x;
+            }
+            if (IsKeyPressed(KEY_RIGHT) ||
+                (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_L))) {
+                cursorPosition.x += 1;
+                cursorPosition.x =
+                    MIN(editorData.getLine(cursorPosition.y).size() +
+                            editor.lineNumberWidth +
+                            editor.spaceBetweenNumbersAndText,
+                        cursorPosition.x);
+                lastCursorPositionX = cursorPosition.x;
+            }
+            if (IsKeyPressed(KEY_UP) ||
+                (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_K))) {
+                cursorPosition.y -= 1;
+                // cursorPosition.y = MAX(0, cursorPosition.y);
+                if (cursorPosition.y < 0) {
+                    viewportStart -= 1;
+                    viewportStart = MAX(viewportStart, 0);
+                    cursorPosition.y = 0;
+                }
+                // also set the x position to the max of position and
+                // lastCursorPositionX
+                cursorPosition.x = MAX(cursorPosition.x, lastCursorPositionX);
+            }
+            if (IsKeyPressed(KEY_DOWN) ||
+                (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_J))) {
+                cursorPosition.y += 1;
+                if (cursorPosition.y > viewportLineCount - 1) {
+                    viewportStart += 1;
+                    viewportStart = MIN(viewportStart, editorData.getNumLines() - viewportLineCount - 1);
+                    cursorPosition.y = viewportLineCount - 1;
+                }
+                // cursorPosition.y =
+                //     MIN(cursorPosition.y, viewportLineCount);
+                // MIN(editorData.getNumLines() - 1, cursorPosition.y);
+                // also set the x position to the max of position and
+                // lastCursorPositionX
+                cursorPosition.x = MAX(cursorPosition.x, lastCursorPositionX);
+            }
+
+            // Handle mouse click
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+                // std::cout << GetMouseX() << std::endl;
+                int y = GetMouseY();
+                y -= editor.windowPadding;
+                y /= editor.gridHeight + editor.verticalLineSpacing;
+                cursorPosition.y = y > editorData.getNumLines() - 1 ? editorData.getNumLines() - 1 : y;
+
+                int x = GetMouseX();  // / (int)editor.gridWidth) * (int)editor.gridWidth  + editor.windowPadding;
+                x -= editor.windowPadding;
+                x /= editor.gridWidth;
+                cursorPosition.x = x;
+                // std::cout << GetMouseY() << std::endl;
+            }
+
+            // Text editing (typing, deleting, etc.)
             {
                 // Insert character by typing
                 {
@@ -384,60 +405,6 @@ By Gholamreza Dar
                 }
             }
 
-            // Cursor movement
-            if (IsKeyPressed(KEY_LEFT) ||
-                (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_H))) {
-                cursorPosition.x -= 1;
-                cursorPosition.x = MAX(
-                    editor.lineNumberWidth + editor.spaceBetweenNumbersAndText,
-                    cursorPosition.x);
-                lastCursorPositionX = cursorPosition.x;
-            }
-            if (IsKeyPressed(KEY_RIGHT) ||
-                (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_L))) {
-                cursorPosition.x += 1;
-                cursorPosition.x =
-                    MIN(editorData.getLine(cursorPosition.y).size() +
-                            editor.lineNumberWidth +
-                            editor.spaceBetweenNumbersAndText,
-                        cursorPosition.x);
-                lastCursorPositionX = cursorPosition.x;
-            }
-            if (IsKeyPressed(KEY_UP) ||
-                (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_K))) {
-                cursorPosition.y -= 1;
-                // cursorPosition.y = MAX(0, cursorPosition.y);
-                if (cursorPosition.y < 0) {
-                    viewportStart -= 1;
-                    viewportStart = MAX(viewportStart, 0);
-                    cursorPosition.y = 0;
-                }
-                // also set the x position to the max of position and
-                // lastCursorPositionX
-                std::cout << "viewportStart: " << viewportStart << std::endl;
-                std::cout << "viewportLineCount: " << viewportLineCount << std::endl;
-                std::cout << std::endl;
-                cursorPosition.x = MAX(cursorPosition.x, lastCursorPositionX);
-            }
-            if (IsKeyPressed(KEY_DOWN) ||
-                (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_J))) {
-                cursorPosition.y += 1;
-                if (cursorPosition.y > viewportLineCount - 1) {
-                    viewportStart += 1;
-                    viewportStart = MIN(viewportStart, editorData.getNumLines() - viewportLineCount - 1);
-                    cursorPosition.y = viewportLineCount - 1;
-                }
-                // cursorPosition.y =
-                //     MIN(cursorPosition.y, viewportLineCount);
-                // MIN(editorData.getNumLines() - 1, cursorPosition.y);
-                // also set the x position to the max of position and
-                // lastCursorPositionX
-                cursorPosition.x = MAX(cursorPosition.x, lastCursorPositionX);
-                std::cout << "viewportStart: " << viewportStart << std::endl;
-                std::cout << "viewportLineCount: " << viewportLineCount << std::endl;
-                std::cout << std::endl;
-            }
-
             // if the cursor is out of bounds, clamp it to the current line
             // width
             if (cursorPosition.x > editorData.getLine(cursorPosition.y).size() +
@@ -462,125 +429,108 @@ By Gholamreza Dar
             }
         }
 
-        // debug cursor position
+
+        ///////////////////////// Drawing /////////////////////////
         {
-            if (false) {
-                std::cout << "cursor x: " << cursorPosition.x << std::endl;
-                std::cout << "last cursor x: " << lastCursorPositionX
-                          << std::endl;
-                std::cout << "-------------------------------" << std::endl;
-            }
-        }
+            BeginDrawing();
+            ClearBackground(editor.editorBackgroundColor);
+            DrawFPS(screenWidth - 110, 10);
 
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-            // std::cout << GetMouseX() << std::endl;
-            int y = GetMouseY();
-            y -= editor.windowPadding;
-            y /= editor.gridHeight + editor.verticalLineSpacing;
-            cursorPosition.y = y > editorData.getNumLines() - 1 ? editorData.getNumLines() - 1 : y;
+            // Draw the working grid (this is a grid that every character can be placed on)
+            if (true) {
+                // Draw the grid
+                if (editor.debugGrid) {
+                    int gridRows =
+                        static_cast<int>(screenHeight / editor.gridHeight);
+                    int gridCols = static_cast<int>(screenWidth / editor.gridWidth);
 
-            int x = GetMouseX();  // / (int)editor.gridWidth) * (int)editor.gridWidth  + editor.windowPadding;
-            x -= editor.windowPadding;
-            x /= editor.gridWidth;
-            cursorPosition.x = x;
-            // std::cout << GetMouseY() << std::endl;
-        }
+                    // Draw vertical lines
+                    for (int i = 0; i < gridCols + 1; i++) {
+                        DrawRectangle(i * editor.gridWidth + editor.windowPadding,
+                                    editor.windowPadding, editor.gridLineWidth,
+                                    screenHeight - editor.windowPadding * 2,
+                                    editor.editorGridColor);
+                    }
 
-        // Working grid (this is a grid that every character can be placed on)
-        if (true) {
-            // Draw the grid
-            if (editor.debugGrid) {
-                int gridRows =
-                    static_cast<int>(screenHeight / editor.gridHeight);
-                int gridCols = static_cast<int>(screenWidth / editor.gridWidth);
-
-                // Draw vertical lines
-                for (int i = 0; i < gridCols + 1; i++) {
-                    DrawRectangle(i * editor.gridWidth + editor.windowPadding,
-                                  editor.windowPadding, editor.gridLineWidth,
-                                  screenHeight - editor.windowPadding * 2,
-                                  editor.editorGridColor);
-                }
-
-                // Draw Horizontal lines
-                for (int i = 0; i < gridRows + 1; i++) {
-                    DrawRectangle(editor.windowPadding,
-                                  i * editor.verticalLineSpacing +
-                                      i * editor.gridHeight +
-                                      editor.windowPadding,
-                                  screenWidth - editor.windowPadding * 2,
-                                  editor.gridLineWidth, editor.editorGridColor);
-                    DrawRectangle(editor.windowPadding,
-                                  i * editor.verticalLineSpacing +
-                                      (i + 1) * editor.gridHeight +
-                                      editor.windowPadding,
-                                  screenWidth - editor.windowPadding * 2,
-                                  editor.gridLineWidth, editor.editorGridColor);
+                    // Draw Horizontal lines
+                    for (int i = 0; i < gridRows + 1; i++) {
+                        DrawRectangle(editor.windowPadding,
+                                    i * editor.verticalLineSpacing +
+                                        i * editor.gridHeight +
+                                        editor.windowPadding,
+                                    screenWidth - editor.windowPadding * 2,
+                                    editor.gridLineWidth, editor.editorGridColor);
+                        DrawRectangle(editor.windowPadding,
+                                    i * editor.verticalLineSpacing +
+                                        (i + 1) * editor.gridHeight +
+                                        editor.windowPadding,
+                                    screenWidth - editor.windowPadding * 2,
+                                    editor.gridLineWidth, editor.editorGridColor);
+                    }
                 }
             }
-        }
 
-        // Draw the line numbers
-        if (true) {
-            // Line Numbers
-            SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
-            // TODO: dont start from 0, have a viewport start, end
-            for (int i = 0; i < viewportLineCount; i++) {
-                float x = editor.windowPadding;
-                float y = i * editor.verticalLineSpacing +
-                          i * editor.gridHeight + editor.windowPadding;
+            // Draw the line numbers
+            if (true) {
+                // Line Numbers
+                SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
+                // TODO: dont start from 0, have a viewport start, end
+                for (int i = 0; i < viewportLineCount; i++) {
+                    float x = editor.windowPadding;
+                    float y = i * editor.verticalLineSpacing +
+                            i * editor.gridHeight + editor.windowPadding;
 
-                std::string line_number_text =
-                    leftPad(std::to_string(i + viewportStart + 1), editor.lineNumberWidth);
-                DrawTextEx(font, line_number_text.c_str(), Vector2{x, y},
-                           editor.fontSize, 0, editor.editorLineNumbersColor);
-                if (y >= GetScreenHeight()) break;
-            }
-        }
-
-        // Draw the text character by character
-        if (true) {
-            // Text
-            // TODO: dont start from 0, have a viewport start, end
-            for (int i = 0; i < editorData.getNumLines(); i++) {
-                float x = editor.windowPadding +
-                          editor.gridWidth * (editor.lineNumberWidth + 2);
-                float y = i * editor.verticalLineSpacing +
-                          i * editor.gridHeight + editor.windowPadding;
-                // count viewport lines (TODO: Can be calculated algebraically)
-                // viewportLineCount++;
-
-                if (y >= GetScreenHeight()) {
-                    viewportLineCount = i;
-                    break;
+                    std::string line_number_text =
+                        leftPad(std::to_string(i + viewportStart + 1), editor.lineNumberWidth);
+                    DrawTextEx(font, line_number_text.c_str(), Vector2{x, y},
+                            editor.fontSize, 0, editor.editorLineNumbersColor);
+                    if (y >= GetScreenHeight()) break;
                 }
-                std::string line_text = editorData.getLine(i + viewportStart);
-                DrawTextEx(font, line_text.c_str(), Vector2{x, y},
-                           editor.fontSize, 0, editor.editorTextColor);
             }
-        }
 
-        // Draw the cursor
-        if (true) {
-            float cursorOpacity =
-                sin(GetTime() * editor.cursorBlinkSpeed) * 0.5f + 0.5f;
-            cursorOpacity = MIN(cursorOpacity, 0.8f);
-            Color cursorColor = Color{
-                editor.editorCursorColor.r,
-                editor.editorCursorColor.g,
-                editor.editorCursorColor.b,
-                static_cast<unsigned char>(cursorOpacity * 255),
-            };
-            DrawRectangle(
-                cursorPosition.x * editor.gridWidth + editor.windowPadding,
-                (cursorPosition.y) * editor.gridHeight +
-                    cursorPosition.y * editor.verticalLineSpacing +
-                    editor.windowPadding,
-                editor.gridWidth, editor.gridHeight, cursorColor);
-        }
+            // Draw the text character by character
+            if (true) {
+                // Text
+                // TODO: dont start from 0, have a viewport start, end
+                for (int i = 0; i < editorData.getNumLines(); i++) {
+                    float x = editor.windowPadding +
+                            editor.gridWidth * (editor.lineNumberWidth + 2);
+                    float y = i * editor.verticalLineSpacing +
+                            i * editor.gridHeight + editor.windowPadding;
+                    // count viewport lines (TODO: Can be calculated algebraically)
+                    // viewportLineCount++;
 
-        // Draw debug info
-        if (true) {
+                    if (y >= GetScreenHeight()) {
+                        viewportLineCount = i;
+                        break;
+                    }
+                    std::string line_text = editorData.getLine(i + viewportStart);
+                    DrawTextEx(font, line_text.c_str(), Vector2{x, y},
+                            editor.fontSize, 0, editor.editorTextColor);
+                }
+            }
+
+            // Draw the cursor
+            if (true) {
+                float cursorOpacity =
+                    sin(GetTime() * editor.cursorBlinkSpeed) * 0.5f + 0.5f;
+                cursorOpacity = MIN(cursorOpacity, 0.8f);
+                Color cursorColor = Color{
+                    editor.editorCursorColor.r,
+                    editor.editorCursorColor.g,
+                    editor.editorCursorColor.b,
+                    static_cast<unsigned char>(cursorOpacity * 255),
+                };
+                DrawRectangle(
+                    cursorPosition.x * editor.gridWidth + editor.windowPadding,
+                    (cursorPosition.y) * editor.gridHeight +
+                        cursorPosition.y * editor.verticalLineSpacing +
+                        editor.windowPadding,
+                    editor.gridWidth, editor.gridHeight, cursorColor);
+            }
+
+            // Draw debug info
+            if (true) {
             const float debug_text_left = GetScreenWidth() - 300;
 
             // viewportStart
@@ -595,8 +545,9 @@ By Gholamreza Dar
             std::string debug_string_cursor_position = "cursorPosition: " + std::to_string(int(cursorPosition.x)) + ", " + std::to_string(int(cursorPosition.y)); 
             DrawTextEx(font, debug_string_cursor_position.c_str() , Vector2{debug_text_left, 80.0f}, 22.0f, 0.0f, GREEN);
         }
-
-        EndDrawing();
+            
+            EndDrawing();
+        }
     }
 
     // De-Initialization
