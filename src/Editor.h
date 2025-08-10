@@ -390,6 +390,7 @@ class Editor {
 
         // Draw the line numbers
         if (config.drawLineNumbers) {
+            std::cout<<"LINESSSSS\n";
             // Line Numbers
             SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
             // TODO: dont start from 0, have a viewport start, end
@@ -492,7 +493,7 @@ class Editor {
     Font font;
 
     int viewportStart = 0;
-    int viewportLineCount = 0;
+    int viewportLineCount = 17;
     float lastCursorPositionX = 0.0f;  // why float?
     Vector2 cursorPosition = {0.0f, 0.0f};
 };
