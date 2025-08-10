@@ -1,6 +1,7 @@
 #pragma once
 
 #include <raylib.h>
+#include <string>
 
 // struct for editor config
 class EditorConfig {
@@ -55,7 +56,7 @@ public:
         spaceBetweenNumbersAndText = 2;
         windowPadding = 10.0f;
         baseVerticalLineSpacing = 5.0f;
-        editorZoom = 1.0f;
+        editorZoom = 2.0f;
         zoomSpeed = 0.5f;
         fontSize = 16.0f;
         gridLineWidth = 2.0f;

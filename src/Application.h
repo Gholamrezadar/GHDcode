@@ -5,12 +5,10 @@ class Application {
 public:
     Application (int argc, const char* argv[]) {
         std::string file_address = ParseArgs(argc, argv);
-        editor = new Editor(file_address);
+        editor = std::make_unique<Editor>(file_address);
     }
 
     ~Application() {
-        // TODO: replace with uniqueptr
-        delete editor;
     }
 
     void Run() {
@@ -18,7 +16,7 @@ public:
         editor->Cleanup();
     }
 private:
-    Editor *editor = nullptr;
+    std::unique_ptr<Editor> editor = nullptr;
 
 private:
     std::string ParseArgs(int argc, const char* argv[]) {

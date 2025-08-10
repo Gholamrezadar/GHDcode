@@ -6,9 +6,6 @@
 #include <vector>
 
 #include "Application.h"
-#include "EditorConfig.h"
-#include "EditorData.h"
-#include "utils.h"
 
 int main(int argc, const char* argv[])
 {
