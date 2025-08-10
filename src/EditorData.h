@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -5,11 +7,14 @@
 #include "utils.h"
 
 class EditorData {
-   public:
+    
+public:
+    std::vector<std::string> lines;
+
+public:
+    EditorData() {}
     EditorData(std::string text) { lines = splitLines(text); }
     ~EditorData() = default;
-
-    std::vector<std::string> lines;
 
     int getNumLines() { return lines.size(); }
 
