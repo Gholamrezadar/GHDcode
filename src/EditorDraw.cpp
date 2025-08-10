@@ -95,8 +95,8 @@ void Editor::DrawCursor() {
 
 void Editor::DrawDebugInfo() {
     if (config.drawDebugInfo) {
-        const float debug_text_left = GetScreenWidth() - 240;
-        const float debug_text_top = GetScreenHeight() - 110;
+        const float debug_text_left = GetScreenWidth() - 260;
+        const float debug_text_top = GetScreenHeight() - 160;
 
         // viewportStart
         std::string debug_string_viewport_start = "viewportStart: " + std::to_string(viewportStart);
@@ -109,5 +109,13 @@ void Editor::DrawDebugInfo() {
         // Cursor Position
         std::string debug_string_cursor_position = "cursorPosition: " + std::to_string(int(cursorPosition.x)) + ", " + std::to_string(int(cursorPosition.y));
         DrawTextEx(font, debug_string_cursor_position.c_str(), Vector2{debug_text_left, debug_text_top + 80.0f}, 22.0f, 0.0f, GREEN);
+
+        // Font Size
+        std::string debug_string_font_size = "fontSize: " + std::to_string((int)config.fontSize);
+        DrawTextEx(font, debug_string_font_size.c_str(), Vector2{debug_text_left, debug_text_top + 100.0f}, 22.0f, 0.0f, GREEN);
+
+        // Vertical Line Spacing
+        std::string debug_string_vertical_line_spacing = "verticalLineSpacing: " + std::to_string((int)config.verticalLineSpacing);
+        DrawTextEx(font, debug_string_vertical_line_spacing.c_str(), Vector2{debug_text_left, debug_text_top + 120.0f}, 22.0f, 0.0f, GREEN);
     }
 }
