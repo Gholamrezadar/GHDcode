@@ -6,9 +6,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "EditorConfig.h"
-#include "editorData.h"
+#include "EditorData.h"
 
 class Editor {
    public:
