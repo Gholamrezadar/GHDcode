@@ -65,7 +65,6 @@ void Editor::Init(const std::string& file_address) {
     SetTargetFPS(60);
 
     // Load Fonts (This has to happen after window initialization)
-    config.fontSize *= config.editorZoom;  // set initial zoom
     font = LoadFontEx("resources/fonts/FiraCode-Regular.ttf",
                       config.fontSize, nullptr, 0);
 
@@ -123,6 +122,8 @@ void Editor::Update() {
         HandleTab();
         // Scroll wheel
         HandleScrollWheel();
+        // Calculate viewport sizes
+        CalculateViewportSizes();
     }
 
     // Cleanup and clamp work; TODO: Not ideal, change this
@@ -158,10 +159,10 @@ void Editor::Draw() {
 
     // Draw the working grid (this is a grid that every character can be placed on)
     DrawDebugGrid();
-    // Draw the line numbers
-    DrawLineNumbers();
     // Draw the text character by character
     DrawText();
+    // Draw the line numbers
+    DrawLineNumbers();
     // Draw the cursor
     DrawCursor();
     // Draw FPS

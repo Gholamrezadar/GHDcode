@@ -55,12 +55,14 @@ public:
         lineNumberWidth = 3;
         spaceBetweenNumbersAndText = 2;
         windowPadding = 10.0f;
-        baseVerticalLineSpacing = 5.0f;
+        baseVerticalLineSpacing = 2.5f;
         editorZoom = 2.0f;
         zoomSpeed = 0.5f;
-        fontSize = 16.0f;
         gridLineWidth = 2.0f;
         cursorBlinkSpeed = 10.0f;
+        
+        fontSize = int(16 * editorZoom);
+        verticalLineSpacing = baseVerticalLineSpacing*editorZoom;
 
         // Colors
         editorBackgroundColor = Color{13, 17, 23};

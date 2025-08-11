@@ -16,8 +16,8 @@
   - [x] Is off by a few pixels (fixed by subtracting editors window padding.)
 - [ ] Ctrl+backspace to delete a word before the cadet
 - [ ] Scrolling
-  - [ ] Scroll wheel
-  - [ ] Follow cursor
+  - [x] Scroll wheel
+  - [x] Follow cursor
   - [ ] Page up/down
   - [ ] Ctrl + Home/end
 - [ ] Duplicate line with Ctrl+Shift+Arrow
@@ -38,3 +38,10 @@
 - [x] Save file
 - [x] Load file
 - [x] Take command line argument for file address
+
+## Known Bugs
+
+- [ ] viewportLineCount doesnt work properly
+  - To recreate, shift+Q to reduce the vertical spacing then ctrl+Q x2 to reduce font. you will see linenumbers disappear after a certain number of lines.
+  - fixed but still off by 1 sometimes!
+- [x] vertical line spacing changes when zooming for the first time

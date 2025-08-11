@@ -61,6 +61,7 @@ class Editor {
     void HandleHomeEnd();
     void HandleLineDelete();
     void HandleScrollWheel();
+    void CalculateViewportSizes();
 
     // Drawing functions (called in Draw())
     void DrawDebugGrid();

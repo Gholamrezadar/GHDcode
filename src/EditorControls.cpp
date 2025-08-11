@@ -267,3 +267,10 @@ void Editor::HandleScrollWheel() {
         viewportStart = std::min(viewportStart, editorData->getNumLines() - viewportLineCount - 1);
     }
 }
+
+void Editor::CalculateViewportSizes() {
+    // Vertical size
+    viewportLineCount = ceil((float)GetScreenHeight() / (config.gridHeight+config.verticalLineSpacing));
+    viewportLineCount = std::max(viewportLineCount, 1);
+    viewportLineCount = std::min(viewportLineCount, editorData->getNumLines());
+}
