@@ -73,16 +73,16 @@ void Editor::HandleLineNumbers() {
 }
 
 void Editor::HandleCursorMovement() {
-    if (IsKeyPressed(KEY_LEFT) ||
-        (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_H))) {
+    if (IsKeyPressed(KEY_LEFT) || IsKeyPressedRepeat(KEY_LEFT) ||
+        (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_H) || IsKeyPressedRepeat(KEY_H))) {
         cursorPosition.x -= 1;
         cursorPosition.x = std::max(
             config.lineNumberWidth + config.spaceBetweenNumbersAndText,
             (int)cursorPosition.x);
         lastCursorPositionX = cursorPosition.x;
     }
-    if (IsKeyPressed(KEY_RIGHT) ||
-        (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_L))) {
+    if (IsKeyPressed(KEY_RIGHT) || IsKeyPressedRepeat(KEY_RIGHT) ||
+        (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_L) || IsKeyPressedRepeat(KEY_L))) {
         cursorPosition.x += 1;
         cursorPosition.x =
             std::min((int)editorData->getLine(cursorPosition.y).size() +
@@ -91,8 +91,8 @@ void Editor::HandleCursorMovement() {
                      (int)cursorPosition.x);
         lastCursorPositionX = cursorPosition.x;
     }
-    if (IsKeyPressed(KEY_UP) ||
-        (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_K))) {
+    if (IsKeyPressed(KEY_UP) || IsKeyPressedRepeat(KEY_UP) ||
+        (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_K) || IsKeyPressedRepeat(KEY_K))) {
         cursorPosition.y -= 1;
         // cursorPosition.y = std::max(0, cursorPosition.y);
         if (cursorPosition.y < 0) {
@@ -104,8 +104,8 @@ void Editor::HandleCursorMovement() {
         // lastCursorPositionX
         cursorPosition.x = std::max(cursorPosition.x, lastCursorPositionX);
     }
-    if (IsKeyPressed(KEY_DOWN) ||
-        (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_J))) {
+    if (IsKeyPressed(KEY_DOWN) || IsKeyPressedRepeat(KEY_DOWN) ||
+        (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_J) || IsKeyPressedRepeat(KEY_J))) {
         cursorPosition.y += 1;
         if (cursorPosition.y > viewportLineCount - 1) {
             viewportStart += 1;
@@ -139,17 +139,13 @@ void Editor::HandleMouseClick() {
 
 void Editor::HandleTyping() {
     int key;
-    while ((key = GetCharPressed()) !=
-           0) {  // Check if a key is pressed
-        // std::cout << "key1: " << key << std::endl;
+    while ((key = GetCharPressed()) != 0) {  // Check if a key is pressed
         // ignore backspace
         if (key == KEY_BACKSPACE) {
             break;
         }
 
-        if (key >= 32 &&
-            key <=
-                126) {  // Filter for printable ASCII characters
+        if (key >= 32 && key <= 126) {  // Filter for printable ASCII characters
             // Convert from grid space to line space
             int charNumber = cursorPosition.x -
                              config.lineNumberWidth -
