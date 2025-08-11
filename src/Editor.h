@@ -60,6 +60,7 @@ class Editor {
     void HandleTab();
     void HandleHomeEnd();
     void HandleLineDelete();
+    void HandleScrollWheel();
 
     // Drawing functions (called in Draw())
     void DrawDebugGrid();

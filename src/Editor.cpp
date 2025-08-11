@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Editor.h"
 
 void Editor::Init(const std::string& file_address) {
@@ -123,6 +121,8 @@ void Editor::Update() {
         HandleLineDelete();
         // Tab key
         HandleTab();
+        // Scroll wheel
+        HandleScrollWheel();
     }
 
     // Cleanup and clamp work; TODO: Not ideal, change this

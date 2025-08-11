@@ -259,3 +259,11 @@ void Editor::HandleLineDelete() {
             (int)cursorPosition.x);
     }
 }
+
+void Editor::HandleScrollWheel() {
+    if (GetMouseWheelMoveV().y != 0.0f) {
+        viewportStart -= GetMouseWheelMoveV().y;
+        viewportStart = std::max(viewportStart, 0);
+        viewportStart = std::min(viewportStart, editorData->getNumLines() - viewportLineCount - 1);
+    }
+}
