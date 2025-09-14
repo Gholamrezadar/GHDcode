@@ -22,8 +22,6 @@
   - [ ] Ctrl + Home/end
 - [ ] Duplicate line with Ctrl+Shift+Arrow
 - [ ] Move line up/down with Alt+Arrow
-- [ ] Load text file from command line arguments
-- [ ] New file (Ctrl+N)
 - [ ] Save file (Ctrl+S)
 - [ ] Selection
   - [ ] Select text (Shift+Movement) or (Ctrl+A)
@@ -37,7 +35,7 @@
 
 - [x] Save file
 - [x] Load file
-- [x] Take command line argument for file address
+- [ ] Take command line argument for file address
 
 ## Known Bugs
 
@@ -45,3 +43,15 @@
   - To recreate, shift+Q to reduce the vertical spacing then ctrl+Q x2 to reduce font. you will see linenumbers disappear after a certain number of lines.
   - fixed but still off by 1 sometimes!
 - [x] vertical line spacing changes when zooming for the first time
+- [ ] ctrl L and crrl H do two different things!
+- [ ] Zoom in does one more zoom level than necessary (goes to 5 instead of max of 4)
+
+## Notes
+
+Things to do next:
+
+1. Save file
+2. Undo/Redo
+3. Selection and copy paste
+4. Image Effects
+5. Imgui debug
