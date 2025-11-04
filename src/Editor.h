@@ -45,7 +45,8 @@ class Editor {
     Vector2 cursorPosition = {0.0f, 0.0f};
 
    private:
-    // Controls (called in Update())
+    // Controls (called in Editor.Update())
+    // Defined in EditorControls.cpp
     void HandleDebugGrid();
     void HandleDebugInfo();
     void HandleZoom();
@@ -64,6 +65,7 @@ class Editor {
     void CalculateViewportSizes();
 
     // Drawing functions (called in Draw())
+    // Defined in EditorDraw.cpp
     void DrawDebugGrid();
     void DrawDebugInfo();
     void DrawCursor();
